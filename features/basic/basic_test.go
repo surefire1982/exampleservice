@@ -1,23 +1,26 @@
 package basic
 
 import (
+	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/go-chi/chi"
 )
 
-func TestGetWelcome(t *testing.T) {
-	req, err := http.NewRequest("GET", "/health-check", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+func TestGetUser(t *testing.T) {
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetWelcome)
+	req := httptest.NewRequest("GET", "/", nil)
 
-	// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-	// directly and pass in our Request and ResponseRecorder.
+	rctx := chi.NewRouteContext()
+	rctx.URLParams.Add("userID", "userID1")
+
+	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
+
+	handler := http.HandlerFunc(GetUser)
+
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
@@ -27,8 +30,26 @@ func TestGetWelcome(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := "welcome to Go!"
-	if rr.Body.String() != expected {
+	expectedUser := User{
+		UserID:   "userID1",
+		Username: "GoUser",
+		Email:    "gouser@gouser.com",
+	}
+
+	expectedByteArray, err := json.Marshal(expectedUser)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected := string(expectedByteArray)
+
+	receivedUser := &User{}
+
+	if err := json.Unmarshal(rr.Body.Bytes(), receivedUser); err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedUser != *receivedUser {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}
