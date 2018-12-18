@@ -32,7 +32,7 @@ func Routes() *chi.Mux {
 
 func main() {
 	router := Routes()
-	port := ":3000"
+	port := ":8080"
 
 	log.Printf("Starting server on port %s\n", port)
 
