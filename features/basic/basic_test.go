@@ -3,16 +3,27 @@ package basic
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/go-chi/chi"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 // TODO: Add remaining tests for other endpoints
 
-func TestGetUser(t *testing.T) {
+// Define the suite, and absorb the built-in basic suite
+// functionality from testify - including a T() method which
+// returns the current testing context
+type BasicTestSuite struct {
+	suite.Suite
+}
+
+func (suite *BasicTestSuite) TestGetUser() {
+	t := suite.T()
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
 
@@ -26,10 +37,7 @@ func TestGetUser(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+	assert.Equal(t, rr.Code, http.StatusOK, fmt.Sprintf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK))
 
 	// Check the response body is what we expect.
 	expectedUser := User{
@@ -38,26 +46,18 @@ func TestGetUser(t *testing.T) {
 		Email:    "gouser@gouser.com",
 	}
 
-	expectedByteArray, err := json.Marshal(expectedUser)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	expected := string(expectedByteArray)
-
 	receivedUser := &User{}
 
 	if err := json.Unmarshal(rr.Body.Bytes(), receivedUser); err != nil {
 		t.Fatal(err)
 	}
 
-	if expectedUser != *receivedUser {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, expectedUser, *receivedUser, "Received and Expected users should be equal")
+
 }
 
-func TestDeleteUser(t *testing.T) {
+func (suite *BasicTestSuite) TestDeleteUser() {
+	t := suite.T()
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest("DELETE", "/", nil)
 
@@ -71,11 +71,14 @@ func TestDeleteUser(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+	assert.Equal(t, rr.Code, http.StatusOK, fmt.Sprintf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK))
 
 	// TODO: Add database check here to make sure entry was deleted
 
+}
+
+// In order for 'go test' to run this suite, we need to create
+// a normal test function and pass our suite to suite.Run
+func TestExampleTestSuite(t *testing.T) {
+	suite.Run(t, new(BasicTestSuite))
 }
