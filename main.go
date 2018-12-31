@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,10 +9,11 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	basic "github.com/surefire1982/exampleservice/features/basic"
+	"github.com/surefire1982/exampleservice/internal/config"
 )
 
 // Routes generates routes for service
-func Routes() *chi.Mux {
+func Routes(configuration *config.Config) *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(
@@ -22,8 +24,9 @@ func Routes() *chi.Mux {
 		middleware.Recoverer,
 	)
 
+	// add database connection strings here
 	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/basic", basic.Routes())
+		r.Mount("/api/basic", basic.Routes(configuration))
 	})
 
 	return router
@@ -31,8 +34,12 @@ func Routes() *chi.Mux {
 }
 
 func main() {
-	router := Routes()
-	port := ":8080"
+	configuration, err := config.New()
+	if err != nil {
+		log.Panicln("Configuration error", err)
+	}
+	router := Routes(configuration)
+	port := fmt.Sprintf(":%s", configuration.Constants.PORT)
 
 	log.Printf("Starting server on port %s\n", port)
 
