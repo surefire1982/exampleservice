@@ -3,33 +3,47 @@ package user
 import (
 	"testing"
 
+	"github.com/jinzhu/gorm"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/surefire1982/exampleservice/pkg/entity"
+
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-type BasicTestSuite struct {
+type TestSuite struct {
 	suite.Suite
+	svc *Service
 }
 
-func (suite *BasicTestSuite) TestStore() {
+func (suite *TestSuite) SetupSuite() {
 	t := suite.T()
-	repo := NewInMemRepository()
-	svc := NewService(repo)
+	db, err := gorm.Open("mysql", "devuser:password@/autobot?charset=utf8&parseTime=True&loc=Local")
+	if err != nil {
+		assert.Fail(t, "Error connecting to database")
+	}
 
+	db.DropTableIfExists(&user{})
+	repo := NewDBRepository(db)
+	suite.svc = NewService(repo)
+}
+
+func (suite *TestSuite) TestStore() {
+	t := suite.T()
 	user := &entity.User{
 		Username: "RandomUser",
 		Email:    "random_email@email.com",
 	}
 
-	id, err := svc.Store(user)
+	id, err := suite.svc.Store(user)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, id)
 
 }
 
-func (suite *BasicTestSuite) TestFindAndFindAll() {
+func (suite *TestSuite) TestFindAndFindAll() {
 	t := suite.T()
 	repo := NewInMemRepository()
 	svc := NewService(repo)
@@ -70,7 +84,7 @@ func (suite *BasicTestSuite) TestFindAndFindAll() {
 
 }
 
-func (suite *BasicTestSuite) TestDelete() {
+func (suite *TestSuite) TestDelete() {
 	t := suite.T()
 	repo := NewInMemRepository()
 	svc := NewService(repo)
@@ -100,6 +114,6 @@ func (suite *BasicTestSuite) TestDelete() {
 
 // In order for 'go test' to run this suite, we need to create
 // a normal test function and pass our suite to suite.Run
-func TestExampleTestSuite(t *testing.T) {
-	suite.Run(t, new(BasicTestSuite))
+func TestServiceSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
 }
