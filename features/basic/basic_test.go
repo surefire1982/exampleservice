@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/surefire1982/exampleservice/pkg/entity"
+
 	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -40,13 +42,13 @@ func (suite *BasicTestSuite) TestGetUser() {
 	assert.Equal(t, rr.Code, http.StatusOK, fmt.Sprintf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK))
 
 	// Check the response body is what we expect.
-	expectedUser := User{
+	expectedUser := entity.User{
 		UserID:   "userID1",
 		Username: "GoUser",
 		Email:    "gouser@gouser.com",
 	}
 
-	receivedUser := &User{}
+	receivedUser := &entity.User{}
 
 	if err := json.Unmarshal(rr.Body.Bytes(), receivedUser); err != nil {
 		t.Fatal(err)
