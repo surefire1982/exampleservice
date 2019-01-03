@@ -8,8 +8,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
-	basic "github.com/surefire1982/exampleservice/features/basic"
+	user "github.com/surefire1982/exampleservice/features/user"
 	"github.com/surefire1982/exampleservice/internal/config"
+	pkguser "github.com/surefire1982/exampleservice/pkg/user"
 )
 
 // Routes generates routes for service
@@ -24,9 +25,14 @@ func Routes(configuration *config.Config) *chi.Mux {
 		middleware.Recoverer,
 	)
 
+	// setup handlers
+	repo := pkguser.NewInMemRepository()
+	userSvc := pkguser.NewService(repo)
+	userHandler := user.NewUserHandler(*userSvc)
+
 	// add database connection strings here
 	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/basic", basic.Routes(configuration))
+		r.Mount("/api/user", userHandler.Routes(configuration))
 	})
 
 	return router
