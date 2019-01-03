@@ -11,4 +11,4 @@ Exampel service shows how a todo rest api can be implemented in golang, with an 
   go run main.go
 ```
 
-- Test out the basic routes in your browser at: localhost:8080 {eg http://localhost:8080/v1/api/basic}
+- Test out the basic routes in your browser at: localhost:8080 {eg http://localhost:8080/v1/api/user}
