@@ -9,3 +9,8 @@ type User struct {
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+// UserResponse entity
+type UserResponse struct {
+	UserID string `json:"userid"`
+}
