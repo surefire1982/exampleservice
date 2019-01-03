@@ -26,8 +26,9 @@ func Routes(configuration *config.Config) *chi.Mux {
 	)
 
 	// setup handlers
-	repo := pkguser.NewInMemRepository()
-	userSvc := pkguser.NewService(repo)
+	// userHandler
+	userRepo := pkguser.NewInMemRepository()
+	userSvc := pkguser.NewService(userRepo)
 	userHandler := user.NewUserHandler(*userSvc)
 
 	// add database connection strings here
