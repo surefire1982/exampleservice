@@ -4,11 +4,18 @@ Exampel service shows how a todo rest api can be implemented in golang, with an 
 
 ### To Run
 
-- From the exampleservice directory, run:
+From the exampleservice directory, use the make file.
+
+Build (creates bin directory with `exampleservice` binary):
 
 ```
-  go get
-  go run main.go
+make
+```
+
+Run all tests:
+
+```
+make test
 ```
 
 - Test out the basic routes in your browser at: localhost:8080 {eg http://localhost:8080/v1/api/user}

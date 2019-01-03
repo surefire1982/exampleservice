@@ -1,2 +1,2 @@
-#exclude created binary file
-exampleservice
+#exclude created binary files
+/bin
