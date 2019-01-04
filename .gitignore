@@ -1,2 +1,5 @@
 #exclude created binary files
 /bin
+
+#exclude config files
+*.config.yaml

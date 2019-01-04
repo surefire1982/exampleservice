@@ -26,7 +26,7 @@ func New() (*Config, error) {
 }
 
 func initViper() (Constants, error) {
-	viper.SetConfigName("example.config")
+	viper.SetConfigName("service.config")
 	viper.AddConfigPath(".")    // search the root directory for the configuration file
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {
