@@ -1,9 +1,6 @@
 package user
 
 import (
-	"time"
-
-	"github.com/rs/xid"
 	"github.com/surefire1982/exampleservice/pkg/entity"
 )
 
@@ -21,8 +18,6 @@ func NewService(repo Repository) *Service {
 
 // Store a user
 func (svc *Service) Store(user *entity.User) (string, error) {
-	user.UserID = xid.New().String()
-	user.CreatedAt = time.Now()
 	return svc.repo.Store(user)
 }
 

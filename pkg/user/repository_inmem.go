@@ -1,15 +1,18 @@
 package user
 
 import (
+	"time"
+
+	"github.com/rs/xid"
 	"github.com/surefire1982/exampleservice/pkg/entity"
 )
 
-// IRepo in-memory repository
+// IRepo in-memory repository, used for unit testing
 type IRepo struct {
 	userMap map[string]*entity.User
 }
 
-// NewInMemRepository create new repository
+// NewInMemRepository create new in-memory repository implementation
 func NewInMemRepository() *IRepo {
 	var userMap = map[string]*entity.User{}
 	return &IRepo{
@@ -18,9 +21,11 @@ func NewInMemRepository() *IRepo {
 }
 
 // Store a User
-func (repo *IRepo) Store(user *entity.User) (string, error) {
-	repo.userMap[user.UserID] = user
-	return user.UserID, nil
+func (repo *IRepo) Store(u *entity.User) (string, error) {
+	u.UserID = xid.New().String()
+	u.CreatedAt = time.Now()
+	repo.userMap[u.UserID] = u
+	return u.UserID, nil
 }
 
 // Find a user
