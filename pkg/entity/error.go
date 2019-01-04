@@ -10,6 +10,3 @@ var ErrCannotBeDeleted = errors.New("Cannot be deleted")
 
 // ErrAlreadyExists user record already exists
 var ErrAlreadyExists = errors.New("User already exists")
-
-// ErrSavingRecord could not save record
-var ErrSavingRecord = errors.New("Error saving record")

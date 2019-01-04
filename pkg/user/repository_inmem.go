@@ -1,6 +1,9 @@
 package user
 
 import (
+	"time"
+
+	"github.com/rs/xid"
 	"github.com/surefire1982/exampleservice/pkg/entity"
 )
 
@@ -19,6 +22,8 @@ func NewInMemRepository() *IRepo {
 
 // Store a User
 func (repo *IRepo) Store(u *entity.User) (string, error) {
+	u.UserID = xid.New().String()
+	u.CreatedAt = time.Now()
 	repo.userMap[u.UserID] = u
 	return u.UserID, nil
 }

@@ -11,10 +11,13 @@ import (
 	user "github.com/surefire1982/exampleservice/api/handlers/user"
 	"github.com/surefire1982/exampleservice/internal/config"
 	pkguser "github.com/surefire1982/exampleservice/pkg/user"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 // Routes generates routes for service
-func Routes(configuration *config.Config) *chi.Mux {
+func Routes(configuration *config.Config, db *gorm.DB) *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(
@@ -27,7 +30,7 @@ func Routes(configuration *config.Config) *chi.Mux {
 
 	// setup handlers
 	// userHandler
-	userRepo := pkguser.NewInMemRepository()
+	userRepo := pkguser.NewDBRepository(db)
 	userSvc := pkguser.NewService(userRepo)
 	userHandler := user.NewUserHandler(*userSvc)
 
@@ -40,12 +43,17 @@ func Routes(configuration *config.Config) *chi.Mux {
 
 }
 
+// TODO: setup database service
 func main() {
 	configuration, err := config.New()
 	if err != nil {
 		log.Panicln("Configuration error", err)
 	}
-	router := Routes(configuration)
+
+	// TODO: make this configurable (and add whether we use in-mem or not)
+	db, err := gorm.Open("mysql", "devuser:password@/autobot?charset=utf8&parseTime=True&loc=Local")
+	defer db.Close() // defer this operation to when we kill service
+	router := Routes(configuration, db)
 	port := fmt.Sprintf(":%s", configuration.Constants.PORT)
 
 	log.Printf("Starting server on port %s\n", port)

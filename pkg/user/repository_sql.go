@@ -3,6 +3,8 @@ package user
 import (
 	"time"
 
+	"github.com/rs/xid"
+
 	"github.com/jinzhu/gorm"
 	"github.com/surefire1982/exampleservice/pkg/entity"
 )
@@ -33,29 +35,36 @@ func NewDBRepository(db *gorm.DB) *SQLRepo {
 
 // Store a User
 func (repo *SQLRepo) Store(u *entity.User) (string, error) {
-	usrRec := user{ID: u.UserID, Username: u.Username, Email: u.Email, CreatedAt: u.CreatedAt}
+	uid := xid.New().String()
+	usrRec := user{ID: uid, Username: u.Username, Email: u.Email, CreatedAt: u.CreatedAt}
 
 	err := repo.db.Create(&usrRec).Error
 	if err != nil {
-		return "", entity.ErrSavingRecord
+		return "", err
 	}
 
-	return u.UserID, nil
+	return uid, nil
 }
 
 // Find a user
 func (repo *SQLRepo) Find(id string) (*entity.User, error) {
-	var usrRec *user
-	repo.db.First(usrRec, id)
-	if &usrRec == nil {
-		return nil, entity.ErrNotFound
+	findUsr := &user{
+		ID: id,
+	}
+	err := repo.db.First(findUsr).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return nil, entity.ErrNotFound
+		}
+		// otherwise just return error
+		return nil, err
 	}
 
 	usrEntity := entity.User{
-		UserID:    usrRec.ID,
-		Username:  usrRec.Username,
-		Email:     usrRec.Email,
-		CreatedAt: usrRec.CreatedAt,
+		UserID:    findUsr.ID,
+		Username:  findUsr.Username,
+		Email:     findUsr.Email,
+		CreatedAt: findUsr.CreatedAt,
 	}
 
 	return &usrEntity, nil
@@ -63,10 +72,34 @@ func (repo *SQLRepo) Find(id string) (*entity.User, error) {
 
 // Delete a user
 func (repo *SQLRepo) Delete(id string) error {
+	delUsr := &user{
+		ID: id,
+	}
+	err := repo.db.Delete(delUsr).Error
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // FindAll Users
 func (repo *SQLRepo) FindAll() ([]*entity.User, error) {
-	return nil, nil
+	var users []user
+	err := repo.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	var entityUsers []*entity.User
+
+	for _, user := range users {
+		entityUser := &entity.User{
+			UserID:    user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+		}
+		entityUsers = append(entityUsers, entityUser)
+	}
+	return entityUsers, nil
 }
