@@ -43,7 +43,6 @@ func Routes(configuration *config.Config, db *gorm.DB) *chi.Mux {
 
 }
 
-// TODO: setup database service
 func main() {
 	configuration, err := config.New()
 	if err != nil {
