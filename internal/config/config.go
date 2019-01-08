@@ -1,12 +1,17 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/spf13/viper"
 )
 
 // Constants are configuration settings
 type Constants struct {
-	PORT string
+	PORT       string
+	DBUser     string
+	DBPassword string
+	DBName     string
 }
 
 // Config is passed around the app
@@ -18,6 +23,10 @@ type Config struct {
 func New() (*Config, error) {
 	config := Config{}
 	constants, err := initViper()
+	// make sure the database settings are set
+	if constants.DBUser == "" || constants.DBName == "" || constants.DBPassword == "" {
+		return &config, errors.New("Database settings are not set")
+	}
 	config.Constants = constants
 	if err != nil {
 		return &config, err
@@ -32,7 +41,7 @@ func initViper() (Constants, error) {
 	if err != nil {
 		return Constants{}, err
 	}
-	viper.SetDefault("PORT", "8080")
+	viper.SetDefault("SERVER_PORT", "8080")
 
 	var constants Constants
 	err = viper.Unmarshal(&constants)

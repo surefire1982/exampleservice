@@ -49,8 +49,8 @@ func main() {
 		log.Panicln("Configuration error", err)
 	}
 
-	// TODO: make this configurable (and add whether we use in-mem or not)
-	db, err := gorm.Open("mysql", "devuser:password@/autobot?charset=utf8&parseTime=True&loc=Local")
+	dbArgs := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", configuration.Constants.DBUser, configuration.Constants.DBPassword, configuration.Constants.DBName)
+	db, err := gorm.Open("mysql", dbArgs)
 	defer db.Close() // defer this operation to when we kill service
 	router := Routes(configuration, db)
 	port := fmt.Sprintf(":%s", configuration.Constants.PORT)
