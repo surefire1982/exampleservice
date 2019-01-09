@@ -44,16 +44,17 @@ func Routes(configuration *config.Config, db *gorm.DB) *chi.Mux {
 }
 
 func main() {
-	configuration, err := config.New()
+	cfg, err := config.New()
 	if err != nil {
 		log.Panicln("Configuration error", err)
 	}
 
-	dbArgs := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", configuration.Constants.DBUser, configuration.Constants.DBPassword, configuration.Constants.DBName)
+	dbArgs := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", cfg.Constants.DBUser, cfg.Constants.DBPassword, cfg.Constants.DBHost, cfg.Constants.DBPort, cfg.Constants.DBName)
+
 	db, err := gorm.Open("mysql", dbArgs)
 	defer db.Close() // defer this operation to when we kill service
-	router := Routes(configuration, db)
-	port := fmt.Sprintf(":%s", configuration.Constants.PORT)
+	router := Routes(cfg, db)
+	port := fmt.Sprintf(":%s", cfg.Constants.Port)
 
 	log.Printf("Starting server on port %s\n", port)
 

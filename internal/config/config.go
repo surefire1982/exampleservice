@@ -8,9 +8,11 @@ import (
 
 // Constants are configuration settings
 type Constants struct {
-	PORT       string
+	Port       string
 	DBUser     string
 	DBPassword string
+	DBHost     string
+	DBPort     string
 	DBName     string
 }
 

@@ -1,5 +1,7 @@
 // rename to service.config.yaml when done
-PORT: 'put server port here'
-DB_USER: 'db user here'
-DB_PASSWORD: 'password here'
-DB_NAME: 'db name here'
+Port: 'put server port here'
+DBUser: 'db user here'
+DBPassword: 'password here'
+DBHost: 'db host here'
+DBPort: 'db port here'
+DBName: 'db name here'
