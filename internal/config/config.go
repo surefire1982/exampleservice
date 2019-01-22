@@ -38,6 +38,7 @@ func New() (*Config, error) {
 
 func initViper() (Constants, error) {
 	viper.SetConfigName("service.config")
+	viper.AutomaticEnv()
 	viper.AddConfigPath(".")    // search the root directory for the configuration file
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {
@@ -45,7 +46,10 @@ func initViper() (Constants, error) {
 	}
 	viper.SetDefault("SERVER_PORT", "8080")
 
+	viper.BindEnv("dbhost") // see if dbhost is overwritten in ENV VARS
+
 	var constants Constants
 	err = viper.Unmarshal(&constants)
+
 	return constants, err
 }

@@ -18,4 +18,18 @@ Run all tests:
 make test
 ```
 
+### To Dockerize:
+
+Build docker image:
+
+```
+docker build . -t <image-name>
+```
+
+Run docker image and map port 8080:
+
+```
+docker run -P <image-name>
+```
+
 - Test out the basic routes in your browser at: localhost:8080 {eg http://localhost:8080/v1/api/user}

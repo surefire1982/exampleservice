@@ -49,6 +49,7 @@ func main() {
 		log.Panicln("Configuration error", err)
 	}
 
+	log.Printf("Using database host: %s\n", cfg.Constants.DBHost)
 	dbArgs := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", cfg.Constants.DBUser, cfg.Constants.DBPassword, cfg.Constants.DBHost, cfg.Constants.DBPort, cfg.Constants.DBName)
 
 	db, err := gorm.Open("mysql", dbArgs)
