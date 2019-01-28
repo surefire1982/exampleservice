@@ -18,7 +18,7 @@ type ServiceDBTestSuite struct {
 	svc *Service
 }
 
-func (suite *ServiceDBTestSuite) SetupSuite() {
+func (suite *ServiceDBTestSuite) SetupTest() {
 	t := suite.T()
 	db, err := gorm.Open("mysql", "devuser:password@/autobot?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
@@ -92,5 +92,5 @@ func (suite *ServiceDBTestSuite) TestDelete() {
 // In order for 'go test' to run this suite, we need to create
 // a normal test function and pass our suite to suite.Run
 func TestServiceDBTestSuite(t *testing.T) {
-	suite.Run(t, new(TestSuite))
+	suite.Run(t, new(ServiceDBTestSuite))
 }
